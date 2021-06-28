@@ -13,17 +13,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@200;300;400;500;600&display=swap"
         rel="stylesheet">
-
+    <script src="https://kit.fontawesome.com/18fde0f373.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <section class="register__section">
         <div class="container">
             <form class="register__form">
+                <div class="overlay"></div>
                 <h2 class="register__name">Register</h2>
                 <div class="register__form-text">
                     <label class="register__label" for="register__name">Name</label> <br />
-                    <input id="register__name" class="register__input" type="text" value='' placeholder=" Enter name">
+                    <input id="register__name" class="register__input" type="text" placeholder=" Enter name">
                     <p class="register__message">Tên không được có ký tự đặc biệt.</p>
                 </div>
                 <div class="register__form-text">
@@ -33,17 +34,30 @@
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="">Password</label> <br />
-                    <input class="register__input" type="password" value="" placeholder=" Enter password">
+                    <input class="register__input" type="password" placeholder=" Enter password">
                     <p class="register__message">
                         Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.
                     </p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="">Confirm Password</label> <br />
-                    <input class="register__input" type="password" value="" placeholder=" Confirm password">
+                    <input class="register__input" type="password" placeholder=" Confirm password">
                     <p class="register__message">Xác nhận mật khẩu phải trùng khớp.</p>
                 </div>
-                <div class="register__submit">Submit</div>
+                <div class="register__submit register__submit--disabel">
+                    Submit
+                    <div class="register__loading spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="register__success">
+                    <div class="register__notification">
+                        <p class="register__notification-text">Thông báo</p>
+                        <i class="register__close fas fa-times"></i>
+                    </div>
+                    <p class="register__success-text">Login successfully</p>
+                </div>
             </form>
         </div>
     </section>
