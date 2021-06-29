@@ -20,7 +20,7 @@
     <section class="register__section">
         <div class="container">
             <form class="register__form">
-                <div class="overlay"></div>
+                <div id="registerOverlay" class="register__overlay"></div>
                 <h2 class="register__name">Register</h2>
                 <div class="register__form-text">
                     <label class="register__label" for="register__name">Name</label> <br />
@@ -44,17 +44,17 @@
                     <input class="register__input" type="password" placeholder=" Confirm password">
                     <p class="register__message">Xác nhận mật khẩu phải trùng khớp.</p>
                 </div>
-                <div class="register__submit register__submit--disabel">
+                <div class="register__submit register__submit--disabel" id="registerSubmit">
                     Submit
-                    <div class="register__loading spinner-border spinner-border-sm" role="status">
+                    <div id="registerLoading" class="register__loading spinner-border spinner-border-sm" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
 
-                <div class="register__success">
+                <div class="register-modal--success" id="registerModalSuccess">
                     <div class="register__notification">
                         <p class="register__notification-text">Thông báo</p>
-                        <i class="register__close fas fa-times"></i>
+                        <i id="registerClose" class="register__close fas fa-times"></i>
                     </div>
                     <p class="register__success-text">Login successfully</p>
                 </div>
