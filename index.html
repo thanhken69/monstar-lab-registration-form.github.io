@@ -24,25 +24,28 @@
                 <h2 class="register__name">Register</h2>
                 <div class="register__form-text">
                     <label class="register__label" for="register__name">Name</label> <br />
-                    <input id="register__name" class="register__input" type="text" placeholder=" Enter name">
-                    <p class="register__message">Tên không được có ký tự đặc biệt.</p>
+                    <input id="registerName" class="register__input" type="text" placeholder=" Enter name">
+                    <p id="registerMessageName" class="register__message">Tên không được có ký tự đặc biệt.</p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="">Email Address</label> <br />
-                    <input class="register__input" type="email" placeholder=" Enter email">
-                    <p class="register__message">Nhập đúng email của bạn.</p>
+                    <input id="registerEmail" class="register__input" type="email" placeholder=" Enter email">
+                    <p id="registerMessageEmail" class="register__message">Nhập đúng email của bạn.</p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="">Password</label> <br />
-                    <input class="register__input" type="password" placeholder=" Enter password">
-                    <p class="register__message">
+                    <input id="registerPassword" class="register__input" type="password" placeholder=" Enter password">
+                    <p id="registerMessagePassword" class="register__message">
                         Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.
                     </p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="">Confirm Password</label> <br />
-                    <input class="register__input" type="password" placeholder=" Confirm password">
-                    <p class="register__message">Xác nhận mật khẩu phải trùng khớp.</p>
+                    <input id="registerConfirmPassword" class="register__input" type="password"
+                        placeholder=" Confirm password">
+                    <p id="registerMessageConfirmPassword" class="register__message">
+                        Xác nhận mật khẩu phải trùng khớp.
+                    </p>
                 </div>
                 <div class="register__submit register__submit--disabel" id="registerSubmit">
                     Submit
@@ -52,11 +55,11 @@
                 </div>
 
                 <div class="register-modal--success" id="registerModalSuccess">
-                    <div class="register__notification">
+                    <header class="register__notification">
                         <p class="register__notification-text">Thông báo</p>
                         <i id="registerClose" class="register__close fas fa-times"></i>
-                    </div>
-                    <p class="register__success-text">Login successfully</p>
+                    </header>
+                    <main id="registerSuccessMessage" class="register__success-text"></main>
                 </div>
             </form>
         </div>

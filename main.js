@@ -1,80 +1,119 @@
 const inputRegister = document.querySelectorAll('.register__input'),
-    message = document.querySelectorAll('.register__message'),
-    submit = document.querySelector('#registerSubmit'),
-    loading = document.querySelector('#registerLoading'),
-    success = document.querySelector('#registerModalSuccess'),
-    close = document.querySelector('#registerClose'),
-    overlay = document.querySelector('#registerOverlay');
+    registerName = document.getElementById('registerName'),
+    registerEmail = document.getElementById('registerEmail'),
+    registerPassword = document.getElementById('registerPassword'),
+    registerConfirmPassword = document.getElementById('registerConfirmPassword'),
 
-let nameError = {
-    notEmty: 'Tên không được bỏ trống.',
-    noSpecialCharacters: 'Tên không được có ký tự đặc biệt.'
+    messageName = document.getElementById('registerMessageName'),
+    messageEmail = document.getElementById('registerMessageEmail'),
+    messagePassword = document.getElementById('registerMessagePassword'),
+    messageConfirmPassword = document.getElementById('registerMessageConfirmPassword'),
+
+    submit = document.getElementById('registerSubmit'),
+    loading = document.getElementById('registerLoading'),
+    success = document.getElementById('registerModalSuccess'),
+    close = document.getElementById('registerClose'),
+    overlay = document.getElementById('registerOverlay'),
+    successMessage = document.getElementById('registerSuccessMessage');
+
+let valueForm = {
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
 }
 
-let emailError = {
-    notEmty: 'Email không được bỏ trống.',
-    noSpecialCharacters: 'Sai cú pháp email.'
+let nameElement = {
+    registerElement: registerName,
+    message: messageName,
+    error: {
+        notEmty: 'Tên không được bỏ trống.',
+        noSpecialCharacters: 'Tên không được có ký tự đặc biệt.'
+    },
+    validateElement: isValid,
+    success: false
 }
 
-let passwordError = {
-    notEmty: 'Mật khẩu không được bỏ trống',
-    noSpecialCharacters: 'Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.'
+let emailElement = {
+    registerElement: registerEmail,
+    message: messageEmail,
+    error: {
+        notEmty: 'Email không được bỏ trống.',
+        noSpecialCharacters: 'Sai cú pháp email.'
+    },
+    validateElement: validateEmail,
+    success: false
 }
 
-validateField(0, nameError, isValid);
-validateField(1, emailError, validateEmail);
-validateField(2, passwordError, validatePassword);
+let passwordElement = {
+    registerElement: registerPassword,
+    message: messagePassword,
+    error: {
+        notEmty: 'Mật khẩu không được bỏ trống',
+        noSpecialCharacters: 'Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.'
+    },
+    validateElement: validatePassword,
+    success: false
+}
 
-inputRegister[2].addEventListener('change', function () {
-    confirmPassword();
+let confirmPasswordElement = {
+    success: false
+}
+
+validateField(nameElement);
+validateField(emailElement);
+validateField(passwordElement);
+
+registerPassword.addEventListener('keyup', function () {
+    confirmPassword(confirmPasswordElement);
 })
 
-inputRegister[3].addEventListener('change', function () {
-    confirmPassword();
+registerConfirmPassword.addEventListener('keyup', function () {
+    confirmPassword(confirmPasswordElement);
 })
 
 submitForm();
 
-close.addEventListener('click', function () {
-    success.style.display = 'none';
-    overlay.style.display = 'none';
-})
-
-function validateField(element, error, validateElement) {
-    inputRegister[element].addEventListener('change', function () {
-        if (isEmpty(inputRegister[element].value) || inputRegister[element].value === null || inputRegister[element] === undefined) {
-            message[element].textContent = error.notEmty;
-            inputRegister[element].style.borderColor = 'red';
-            message[element].style.color = 'red';
-            message[element].style.visibility = 'visible';
-        } else if (!validateElement(inputRegister[element].value)) {
-            inputRegister[element].style.borderColor = 'red';
-            message[element].style.color = 'red';
-            message[element].style.visibility = 'visible';
-            message[element].textContent = error.noSpecialCharacters;
+function validateField(element) {
+    element.registerElement.addEventListener('keyup', function () {
+        if (isEmpty(element.registerElement.value) || element.registerElement.value === null || element.registerElement === undefined) {
+            element.message.textContent = element.error.notEmty;
+            element.registerElement.style.borderColor = 'red';
+            element.message.style.color = 'red';
+            element.message.style.visibility = 'visible';
+            element.success = false;
+        } else if (!element.validateElement(element.registerElement.value)) {
+            element.registerElement.style.borderColor = 'red';
+            element.message.style.color = 'red';
+            element.message.style.visibility = 'visible';
+            element.message.textContent = element.error.noSpecialCharacters;
+            element.success = false;
         } else {
-            inputRegister[element].style.borderColor = 'black';
-            message[element].style.visibility = 'hidden';
+            element.registerElement.style.borderColor = 'black';
+            element.message.style.visibility = 'hidden';
+            element.success = true;
         }
     })
 }
 
-function confirmPassword() {
-    if (inputRegister[3].value === inputRegister[2].value) {
-        message[3].style.visibility = 'hidden';
-        inputRegister[3].style.borderColor = 'black';
-        message[3].style.color = 'black';
+function confirmPassword(element) {
+    if (registerConfirmPassword.value === registerPassword.value) {
+        messageConfirmPassword.style.visibility = 'hidden';
+        registerConfirmPassword.style.borderColor = 'black';
+        messageConfirmPassword.style.color = 'black';
+        element.success = true;
     } else {
-        inputRegister[3].style.borderColor = 'red';
-        message[3].style.color = 'red';
-        message[3].style.visibility = 'visible';
+        registerConfirmPassword.style.borderColor = 'red';
+        messageConfirmPassword.style.color = 'red';
+        messageConfirmPassword.style.visibility = 'visible';
+        element.success = false;
     }
 }
 
 function submitForm() {
     for (let i = 0; i < inputRegister.length; i++) {
         inputRegister[i].addEventListener('keyup', function () {
-            if (checkSubmit(inputRegister)) {
+            if (checkSubmit()) {
                 submit.classList.remove('register__submit--disabel');
                 submit.classList.add('register__submit--enable');
             } else {
@@ -85,21 +124,46 @@ function submitForm() {
     }
 
     submit.addEventListener('click', function () {
-        if (checkSubmit(inputRegister)) {
+        if (checkSubmit()) {
             submit.classList.add('register__submit--disabel');
             submit.classList.remove('register__submit--enable');
             loading.style.display = 'inline-block';
 
+            valueForm.name = registerName.value;
+            valueForm.email = registerEmail.value;
+            valueForm.password = registerPassword.value;
+            valueForm.confirmPassword = registerConfirmPassword.value
+
             setTimeout(function () {
                 loading.style.display = 'none';
-                success.style.display = 'block';
-                overlay.style.display = 'block';
 
+                modal({ modalElement: success, type: 'success', message: 'Successfully' })
                 for (let i = 0; i < inputRegister.length; i++) {
-                    inputRegister[i].value = ''
+                    inputRegister[i].value = '';
                 }
+                console.log(valueForm);
             }, 2000)
         }
+    })
+}
+
+function modal({ modalElement, type, message }) {
+    modalElement.style.display = 'block';
+    overlay.style.display = 'block';
+    successMessage.textContent = message;
+
+    modalElement.style.display = 'block';
+    overlay.style.display = 'block';
+    successMessage.textContent = message;
+
+    close.addEventListener('click', function () {
+        success.style.display = 'none';
+        overlay.style.display = 'none';
+
+        nameElement.success = false;
+        emailElement.success = false;
+        passwordElement.success = false;
+        confirmPasswordElement.success = false;
     })
 }
 
@@ -135,8 +199,8 @@ function isEmpty(str) {
     return (!str || 0 === str.length);
 }
 
-function checkSubmit(inputRegister) {
-    if (isValid(inputRegister[0].value) && validateEmail(inputRegister[1].value) && validatePassword(inputRegister[2].value) && inputRegister[3].value === inputRegister[2].value) {
+function checkSubmit() {
+    if (nameElement.success && emailElement.success && passwordElement.success && confirmPasswordElement.success) {
         return true
     } else return false
 }
