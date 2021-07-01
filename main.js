@@ -1,20 +1,4 @@
-const inputRegister = document.querySelectorAll('.register__input'),
-    registerName = document.getElementById('registerName'),
-    registerEmail = document.getElementById('registerEmail'),
-    registerPassword = document.getElementById('registerPassword'),
-    registerConfirmPassword = document.getElementById('registerConfirmPassword'),
-
-    messageName = document.getElementById('registerMessageName'),
-    messageEmail = document.getElementById('registerMessageEmail'),
-    messagePassword = document.getElementById('registerMessagePassword'),
-    messageConfirmPassword = document.getElementById('registerMessageConfirmPassword'),
-
-    submit = document.getElementById('registerSubmit'),
-    loading = document.getElementById('registerLoading'),
-    success = document.getElementById('registerModalSuccess'),
-    close = document.getElementById('registerClose'),
-    overlay = document.getElementById('registerOverlay'),
-    successMessage = document.getElementById('registerSuccessMessage');
+const inputRegister = document.querySelectorAll('.register__input');
 
 let valueForm = {
     name: '',
@@ -28,7 +12,8 @@ let nameElement = {
     message: messageName,
     error: {
         notEmty: 'Tên không được bỏ trống.',
-        noSpecialCharacters: 'Tên không được có ký tự đặc biệt.'
+        noSpecialCharacters: 'Tên không được có ký tự đặc biệt.',
+        upperCaseFirst: 'Phải viết hoa chữ cái đầu'
     },
     validateElement: isValid,
     success: false
@@ -57,87 +42,106 @@ let passwordElement = {
 }
 
 let confirmPasswordElement = {
+    registerElement: registerConfirmPassword,
+    message: messageConfirmPassword,
+    error: {
+        notEmty: 'Xác nhận mật khẩu không được bỏ trống',
+        noSpecialCharacters: 'Xác nhận mật khẩu phải trùng khớp.'
+    },
+    validateElement: validateConfirmPassword,
     success: false
 }
 
-validateField(nameElement);
-validateField(emailElement);
-validateField(passwordElement);
-
-registerPassword.addEventListener('keyup', function () {
-    confirmPassword(confirmPasswordElement);
+nameElement.registerElement.addEventListener('input', () => {
+    validateField(nameElement);
+    if (!checkUpperCase(nameElement.registerElement.value)) {
+        appendError(nameElement, nameElement.error.upperCaseFirst);
+    }
 })
 
-registerConfirmPassword.addEventListener('keyup', function () {
-    confirmPassword(confirmPasswordElement);
+emailElement.registerElement.addEventListener('input', () => {
+    validateField(emailElement);
 })
+
+passwordElement.registerElement.addEventListener('input', () => {
+    validateField(passwordElement);
+    validateField(confirmPasswordElement);
+})
+
+confirmPasswordElement.registerElement.addEventListener('input', function () {
+    validateField(confirmPasswordElement);
+})
+
+displaySubmit();
 
 submitForm();
 
+registerClose.addEventListener('click', function () {
+    registerModalSuccess.style.display = 'none';
+    registerOverlay.style.display = 'none';
+
+    nameElement.success = false;
+    emailElement.success = false;
+    passwordElement.success = false;
+    confirmPasswordElement.success = false;
+})
+
 function validateField(element) {
-    element.registerElement.addEventListener('keyup', function () {
-        if (isEmpty(element.registerElement.value) || element.registerElement.value === null || element.registerElement === undefined) {
-            element.message.textContent = element.error.notEmty;
-            element.registerElement.style.borderColor = 'red';
-            element.message.style.color = 'red';
-            element.message.style.visibility = 'visible';
-            element.success = false;
-        } else if (!element.validateElement(element.registerElement.value)) {
-            element.registerElement.style.borderColor = 'red';
-            element.message.style.color = 'red';
-            element.message.style.visibility = 'visible';
-            element.message.textContent = element.error.noSpecialCharacters;
-            element.success = false;
-        } else {
-            element.registerElement.style.borderColor = 'black';
-            element.message.style.visibility = 'hidden';
-            element.success = true;
-        }
-    })
+    if (isEmpty(element.registerElement.value) || element.registerElement.value === null || element.registerElement === undefined) {
+        appendError(element, element.error.notEmty);
+    } else if (!element.validateElement(element.registerElement.value)) {
+        appendError(element, element.error.noSpecialCharacters);
+    } else if (element.validateElement(element.registerElement.value)) {
+        removeError(element);
+    }
 }
 
-function confirmPassword(element) {
-    if (registerConfirmPassword.value === registerPassword.value) {
-        messageConfirmPassword.style.visibility = 'hidden';
-        registerConfirmPassword.style.borderColor = 'black';
-        messageConfirmPassword.style.color = 'black';
-        element.success = true;
-    } else {
-        registerConfirmPassword.style.borderColor = 'red';
-        messageConfirmPassword.style.color = 'red';
-        messageConfirmPassword.style.visibility = 'visible';
-        element.success = false;
+function appendError(element, error) {
+    element.message.textContent = error;
+    element.registerElement.style.borderColor = 'red';
+    element.message.style.color = 'red';
+    element.message.style.visibility = 'visible';
+    element.success = false;
+}
+
+function removeError(element) {
+    element.registerElement.style.borderColor = 'black';
+    element.message.style.visibility = 'hidden';
+    element.success = true;
+}
+
+function displaySubmit() {
+    for (let i = 0; i < inputRegister.length; i++) {
+        inputRegister[i].addEventListener('input', function () {
+            if (checkSubmit()) {
+                registerSubmit.classList.remove('register__submit--disabel');
+                registerSubmit.classList.add('register__submit--enable');
+            } else {
+                registerSubmit.classList.add('register__submit--disabel');
+                registerSubmit.classList.remove('register__submit--enable');
+            }
+        })
     }
 }
 
 function submitForm() {
-    for (let i = 0; i < inputRegister.length; i++) {
-        inputRegister[i].addEventListener('keyup', function () {
-            if (checkSubmit()) {
-                submit.classList.remove('register__submit--disabel');
-                submit.classList.add('register__submit--enable');
-            } else {
-                submit.classList.add('register__submit--disabel');
-                submit.classList.remove('register__submit--enable');
-            }
-        })
-    }
-
-    submit.addEventListener('click', function () {
+    registerSubmit.addEventListener('click', function () {
         if (checkSubmit()) {
-            submit.classList.add('register__submit--disabel');
-            submit.classList.remove('register__submit--enable');
-            loading.style.display = 'inline-block';
+            registerSubmit.classList.add('register__submit--disabel');
+            registerSubmit.classList.remove('register__submit--enable');
+            registerLoading.style.display = 'inline-block';
 
-            valueForm.name = registerName.value;
-            valueForm.email = registerEmail.value;
-            valueForm.password = registerPassword.value;
-            valueForm.confirmPassword = registerConfirmPassword.value
+            valueForm.name = nameElement.registerElement.value;
+            valueForm.email = emailElement.registerElement.value;
+            valueForm.password = passwordElement.registerElement.value;
+            valueForm.confirmPassword = confirmPasswordElement.registerElement.value
 
             setTimeout(function () {
-                loading.style.display = 'none';
+                registerLoading.style.display = 'none';
 
-                modal({ modalElement: success, type: 'success', message: 'Successfully' })
+                modal({
+                    modalElement: registerModalSuccess, type: 'success', message: 'Successfully'
+                })
                 for (let i = 0; i < inputRegister.length; i++) {
                     inputRegister[i].value = '';
                 }
@@ -149,22 +153,17 @@ function submitForm() {
 
 function modal({ modalElement, type, message }) {
     modalElement.style.display = 'block';
-    overlay.style.display = 'block';
-    successMessage.textContent = message;
+    registerOverlay.style.display = 'block';
+    registerSuccessMessage.textContent = message;
+}
 
-    modalElement.style.display = 'block';
-    overlay.style.display = 'block';
-    successMessage.textContent = message;
-
-    close.addEventListener('click', function () {
-        success.style.display = 'none';
-        overlay.style.display = 'none';
-
-        nameElement.success = false;
-        emailElement.success = false;
-        passwordElement.success = false;
-        confirmPasswordElement.success = false;
+function checkUpperCase(str) {
+    let check = true;
+    let arr = str.trim().split(' ');
+    arr.map(char => {
+        if ((char[0] === char[0].toUpperCase()) === false) return check = false
     })
+    return check
 }
 
 function removeAscent(str) {
@@ -195,6 +194,10 @@ function validatePassword(password) {
     return re.test(password);
 }
 
+function validateConfirmPassword(confirmPassword) {
+    return confirmPassword === registerPassword.value;
+}
+
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
@@ -204,8 +207,3 @@ function checkSubmit() {
         return true
     } else return false
 }
-
-
-
-
-
