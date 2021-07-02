@@ -54,12 +54,16 @@
                     </div>
                 </div>
 
-                <div class="register-modal--success" id="registerModalSuccess">
+                <div class="register-modal" id="registerModalSuccess">
                     <header class="register__notification">
                         <p class="register__notification-text">Thông báo</p>
                         <i id="registerClose" class="register__close fas fa-times"></i>
                     </header>
-                    <main id="registerSuccessMessage" class="register__success-text"></main>
+                    <main id="registerSuccess" class="register__success"></main>
+                    <div id="registerError" class="register__error">
+                        <p id="registerErrorMessage" class="register__error-message"> </p>
+                        <div id="registerButton" class="register__btn">Try Again</div>
+                    </div>
                 </div>
             </form>
         </div>

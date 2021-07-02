@@ -12,7 +12,7 @@ let nameElement = {
     message: messageName,
     error: {
         notEmty: 'Tên không được bỏ trống.',
-        noSpecialCharacters: 'Tên không được có ký tự đặc biệt.',
+        specialCharacters: 'Tên không được có ký tự đặc biệt.',
         upperCaseFirst: 'Phải viết hoa chữ cái đầu'
     },
     validateElement: isValid,
@@ -24,7 +24,7 @@ let emailElement = {
     message: messageEmail,
     error: {
         notEmty: 'Email không được bỏ trống.',
-        noSpecialCharacters: 'Sai cú pháp email.'
+        specialCharacters: 'Sai cú pháp email.'
     },
     validateElement: validateEmail,
     success: false
@@ -35,7 +35,8 @@ let passwordElement = {
     message: messagePassword,
     error: {
         notEmty: 'Mật khẩu không được bỏ trống',
-        noSpecialCharacters: 'Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.'
+        specialCharacters: 'Mật khẩu bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.',
+        syntaxError: 'Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.'
     },
     validateElement: validatePassword,
     success: false
@@ -46,51 +47,58 @@ let confirmPasswordElement = {
     message: messageConfirmPassword,
     error: {
         notEmty: 'Xác nhận mật khẩu không được bỏ trống',
-        noSpecialCharacters: 'Xác nhận mật khẩu phải trùng khớp.'
+        specialCharacters: 'Xác nhận mật khẩu phải trùng khớp.'
     },
     validateElement: validateConfirmPassword,
     success: false
 }
 
-nameElement.registerElement.addEventListener('input', () => {
+registerName.addEventListener('input', () => {
     validateField(nameElement);
     if (!checkUpperCase(nameElement.registerElement.value)) {
         appendError(nameElement, nameElement.error.upperCaseFirst);
     }
 })
 
-emailElement.registerElement.addEventListener('input', () => {
+registerEmail.addEventListener('input', () => {
     validateField(emailElement);
 })
 
-passwordElement.registerElement.addEventListener('input', () => {
+registerPassword.addEventListener('input', () => {
     validateField(passwordElement);
+    if (registerPassword.value.length < 8 || registerPassword.value.length > 32) {
+        appendError(passwordElement, passwordElement.error.syntaxError);
+    }
     validateField(confirmPasswordElement);
 })
 
-confirmPasswordElement.registerElement.addEventListener('input', function () {
+registerConfirmPassword.addEventListener('input', function () {
     validateField(confirmPasswordElement);
 })
 
-displaySubmit();
+for (let i = 0; i < inputRegister.length; i++) {
+    inputRegister[i].addEventListener('input', function () {
+        displaySubmit();
+    })
+}
 
-submitForm();
+registerSubmit.addEventListener('click', function () {
+    submitForm();
+})
 
 registerClose.addEventListener('click', function () {
-    registerModalSuccess.style.display = 'none';
-    registerOverlay.style.display = 'none';
+    closeModal();
+})
 
-    nameElement.success = false;
-    emailElement.success = false;
-    passwordElement.success = false;
-    confirmPasswordElement.success = false;
+registerButton.addEventListener('click', function () {
+    closeModal();
 })
 
 function validateField(element) {
     if (isEmpty(element.registerElement.value) || element.registerElement.value === null || element.registerElement === undefined) {
         appendError(element, element.error.notEmty);
     } else if (!element.validateElement(element.registerElement.value)) {
-        appendError(element, element.error.noSpecialCharacters);
+        appendError(element, element.error.specialCharacters);
     } else if (element.validateElement(element.registerElement.value)) {
         removeError(element);
     }
@@ -110,57 +118,66 @@ function removeError(element) {
     element.success = true;
 }
 
-function displaySubmit() {
-    for (let i = 0; i < inputRegister.length; i++) {
-        inputRegister[i].addEventListener('input', function () {
-            if (checkSubmit()) {
-                registerSubmit.classList.remove('register__submit--disabel');
-                registerSubmit.classList.add('register__submit--enable');
-            } else {
-                registerSubmit.classList.add('register__submit--disabel');
-                registerSubmit.classList.remove('register__submit--enable');
-            }
-        })
-    }
-}
-
 function submitForm() {
-    registerSubmit.addEventListener('click', function () {
-        if (checkSubmit()) {
-            registerSubmit.classList.add('register__submit--disabel');
-            registerSubmit.classList.remove('register__submit--enable');
-            registerLoading.style.display = 'inline-block';
+    if (isValidForm()) {
+        registerSubmit.classList.add('register__submit--disabel');
+        registerSubmit.classList.remove('register__submit--enable');
+        registerLoading.style.display = 'inline-block';
 
-            valueForm.name = nameElement.registerElement.value;
-            valueForm.email = emailElement.registerElement.value;
-            valueForm.password = passwordElement.registerElement.value;
-            valueForm.confirmPassword = confirmPasswordElement.registerElement.value
+        valueForm.name = nameElement.registerElement.value;
+        valueForm.email = emailElement.registerElement.value;
+        valueForm.password = passwordElement.registerElement.value;
+        valueForm.confirmPassword = confirmPasswordElement.registerElement.value
 
-            setTimeout(function () {
-                registerLoading.style.display = 'none';
+        setTimeout(function () {
+            registerLoading.style.display = 'none';
 
-                modal({
-                    modalElement: registerModalSuccess, type: 'success', message: 'Successfully'
-                })
-                for (let i = 0; i < inputRegister.length; i++) {
-                    inputRegister[i].value = '';
-                }
-                console.log(valueForm);
-            }, 2000)
-        }
-    })
+            modal({
+                modalElement: registerModalSuccess, type: 'success', message: 'Login successfully'
+            })
+            for (let i = 0; i < inputRegister.length; i++) {
+                inputRegister[i].value = '';
+            }
+            console.log(valueForm);
+        }, 2000)
+    }
 }
 
 function modal({ modalElement, type, message }) {
     modalElement.style.display = 'block';
     registerOverlay.style.display = 'block';
-    registerSuccessMessage.textContent = message;
+    if (type === 'success') {
+        registerSuccess.textContent = message;
+        registerSuccess.style.display = 'block'
+    } else if (type === 'error') {
+        registerError.style.display = 'block';
+        registerErrorMessage.textContent = message;
+    }
+}
+
+function closeModal() {
+    registerModalSuccess.style.display = 'none';
+    registerOverlay.style.display = 'none';
+    nameElement.success = false;
+    emailElement.success = false;
+    passwordElement.success = false;
+    confirmPasswordElement.success = false;
+}
+
+function displaySubmit() {
+    if (isValidForm()) {
+        registerSubmit.classList.remove('register__submit--disabel');
+        registerSubmit.classList.add('register__submit--enable');
+    } else {
+        registerSubmit.classList.add('register__submit--disabel');
+        registerSubmit.classList.remove('register__submit--enable');
+    }
 }
 
 function checkUpperCase(str) {
     let check = true;
-    let arr = str.trim().split(' ');
-    arr.map(char => {
+    str = str.trim().split(' ');
+    str.map(char => {
         if ((char[0] === char[0].toUpperCase()) === false) return check = false
     })
     return check
@@ -180,7 +197,7 @@ function removeAscent(str) {
 }
 
 function isValid(string) {
-    const re = /^[a-zA-Z ]{2,}$/g;
+    const re = /^[a-zA-Z ]{1,}$/g;
     return re.test(removeAscent(string))
 }
 
@@ -190,7 +207,7 @@ function validateEmail(email) {
 }
 
 function validatePassword(password) {
-    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,}$/;
     return re.test(password);
 }
 
@@ -202,8 +219,6 @@ function isEmpty(str) {
     return (!str || 0 === str.length);
 }
 
-function checkSubmit() {
-    if (nameElement.success && emailElement.success && passwordElement.success && confirmPasswordElement.success) {
-        return true
-    } else return false
+function isValidForm() {
+    return nameElement.success && emailElement.success && passwordElement.success && confirmPasswordElement.success;
 }
