@@ -1,5 +1,3 @@
-const inputRegister = document.querySelectorAll('.register__input');
-
 let valueForm = {
     name: '',
     email: '',
@@ -7,79 +5,149 @@ let valueForm = {
     confirmPassword: ''
 }
 
-let nameElement = {
+const nameElement = {
+    id: "name",
+    value: "",
     registerElement: registerName,
     message: messageName,
-    error: {
-        notEmty: 'Tên không được bỏ trống.',
-        specialCharacters: 'Tên không được có ký tự đặc biệt.',
-        upperCaseFirst: 'Phải viết hoa chữ cái đầu'
+    isValid: false,
+    rules: {
+        required: {
+            value: true,
+            errorMessage: 'Tên không được bỏ trống.',
+        }, maxLength: {
+            value: 8,
+            errorMessage: "Tên phải lớn hơn 8 ký tự.",
+        },
+        pattern: {
+            value: function (value) {
+                const re = /^[a-zA-Z ]{1,}$/g;
+                return re.test(removeAscent(value))
+            },
+            errorMessage: "Tên chỉ chứa ký tự từ a đến Z.",
+        },
+        customValidate: {
+            upperCaseFirstCharacter: {
+                validate: function (name) {
+                    let check = true;
+                    name = name.trim().split(' ');
+                    name.map(char => {
+                        if ((char[0] === char[0].toUpperCase()) === false) return check = false
+                    })
+                    return check
+                },
+                errorMessage: "Tên phải có ký tự đầu tiên viết hoa.",
+            },
+        },
     },
-    validateElement: isValid,
-    success: false
-}
+};
 
-let emailElement = {
+const emailElement = {
+    id: "email",
+    value: "",
     registerElement: registerEmail,
     message: messageEmail,
-    error: {
-        notEmty: 'Email không được bỏ trống.',
-        specialCharacters: 'Sai cú pháp email.'
+    isValid: false,
+    rules: {
+        required: {
+            value: true,
+            errorMessage: "Email không được bỏ trống.",
+        },
+        pattern: {
+            value: function (email) {
+                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            },
+            errorMessage: "Email sai cú pháp.",
+        }
     },
-    validateElement: validateEmail,
-    success: false
-}
+};
 
-let passwordElement = {
+const passwordElement = {
+    id: "password",
+    value: "",
     registerElement: registerPassword,
     message: messagePassword,
-    error: {
-        notEmty: 'Mật khẩu không được bỏ trống',
-        specialCharacters: 'Mật khẩu bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.',
-        syntaxError: 'Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.'
+    isValid: false,
+    rules: {
+        required: {
+            value: true,
+            errorMessage: "Password không được bỏ trống.",
+        }, maxLength: {
+            valueMin: 8,
+            valueMax: 32,
+            errorMessage: "Mật khẩu có độ dài trên 8 và nhỏ hơn 32 ký tự.",
+        },
+        pattern: {
+            value: function (password) {
+                const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,32}$/;
+                return re.test(password);
+            },
+            errorMessage: "Mật khẩu bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.",
+        }
     },
-    validateElement: validatePassword,
-    success: false
-}
+};
 
-let confirmPasswordElement = {
+const confirmPasswordElement = {
+    id: "password",
+    value: "",
     registerElement: registerConfirmPassword,
     message: messageConfirmPassword,
-    error: {
-        notEmty: 'Xác nhận mật khẩu không được bỏ trống',
-        specialCharacters: 'Xác nhận mật khẩu phải trùng khớp.'
+    isValid: false,
+    rules: {
+        required: {
+            value: true,
+            errorMessage: "Xác nhận mật khẩu không được bỏ trống.",
+        },
+        pattern: {
+            value: function validateConfirmPassword(confirmPassword) {
+                return confirmPassword === registerPassword.value;
+            },
+            errorMessage: "Xác nhận mật khẩu phải trùng khớp",
+        }
     },
-    validateElement: validateConfirmPassword,
-    success: false
-}
+};
 
-registerName.addEventListener('input', () => {
-    validateField(nameElement);
-    if (!checkUpperCase(nameElement.registerElement.value)) {
-        appendError(nameElement, nameElement.error.upperCaseFirst);
+
+registerName.addEventListener('keyup', () => {
+    nameElement.value = registerName.value;
+    validateFieldTest(nameElement);
+    if (!nameElement.rules.customValidate.upperCaseFirstCharacter.validate(nameElement.value)) {
+        appendError(nameElement, nameElement.rules.customValidate.upperCaseFirstCharacter.errorMessage);
     }
+    displaySubmit();
 })
 
-registerEmail.addEventListener('input', () => {
-    validateField(emailElement);
+registerEmail.addEventListener('keyup', () => {
+    emailElement.value = registerEmail.value;
+    validateFieldTest(emailElement);
+    displaySubmit();
 })
 
-registerPassword.addEventListener('input', () => {
-    validateField(passwordElement);
-    if (registerPassword.value.length < 8 || registerPassword.value.length > 32) {
-        appendError(passwordElement, passwordElement.error.syntaxError);
+registerPassword.addEventListener('keyup', () => {
+    passwordElement.value = registerPassword.value;
+    validateFieldTest(passwordElement);
+    if (passwordElement.value !== '' && passwordElement.value.length < passwordElement.rules.maxLength.valueMin || passwordElement.value.length > passwordElement.rules.maxLength.valueMax) {
+        appendError(passwordElement, passwordElement.rules.maxLength.errorMessage);
     }
-    validateField(confirmPasswordElement);
+    validateFieldTest(confirmPasswordElement);
+    displaySubmit();
 })
 
-registerConfirmPassword.addEventListener('input', function () {
-    validateField(confirmPasswordElement);
+registerConfirmPassword.addEventListener('keyup', () => {
+    confirmPasswordElement.value = registerConfirmPassword.value;
+    validateFieldTest(confirmPasswordElement);
+    displaySubmit();
 })
 
-for (let i = 0; i < inputRegister.length; i++) {
-    inputRegister[i].addEventListener('input', function () {
-        displaySubmit();
-    })
+function validateFieldTest(element) {
+    if (element.value === '') {
+        appendError(element, element.rules.required.errorMessage);
+    } else if (!element.rules.pattern.value(element.value)) {
+        appendError(element, element.rules.pattern.errorMessage);
+    } else if (element.rules.pattern.value(element.value)) {
+        removeError(element);
+    }
 }
 
 registerSubmit.addEventListener('click', function () {
@@ -90,32 +158,26 @@ registerClose.addEventListener('click', function () {
     closeModal();
 })
 
-registerButton.addEventListener('click', function () {
+registerBtnClose.addEventListener('click', function () {
     closeModal();
 })
 
-function validateField(element) {
-    if (isEmpty(element.registerElement.value) || element.registerElement.value === null || element.registerElement === undefined) {
-        appendError(element, element.error.notEmty);
-    } else if (!element.validateElement(element.registerElement.value)) {
-        appendError(element, element.error.specialCharacters);
-    } else if (element.validateElement(element.registerElement.value)) {
-        removeError(element);
-    }
-}
+registerButton.addEventListener('click', function () {
+    closeModal();
+})
 
 function appendError(element, error) {
     element.message.textContent = error;
     element.registerElement.style.borderColor = 'red';
     element.message.style.color = 'red';
     element.message.style.visibility = 'visible';
-    element.success = false;
+    element.isValid = false;
 }
 
 function removeError(element) {
     element.registerElement.style.borderColor = 'black';
     element.message.style.visibility = 'hidden';
-    element.success = true;
+    element.isValid = true;
 }
 
 function submitForm() {
@@ -124,20 +186,21 @@ function submitForm() {
         registerSubmit.classList.remove('register__submit--enable');
         registerLoading.style.display = 'inline-block';
 
-        valueForm.name = nameElement.registerElement.value;
-        valueForm.email = emailElement.registerElement.value;
-        valueForm.password = passwordElement.registerElement.value;
-        valueForm.confirmPassword = confirmPasswordElement.registerElement.value
+        valueForm.name = nameElement.value;
+        valueForm.email = emailElement.value;
+        valueForm.password = passwordElement.value;
+        valueForm.confirmPassword = confirmPasswordElement.value
 
         setTimeout(function () {
             registerLoading.style.display = 'none';
 
             modal({
-                modalElement: registerModalSuccess, type: 'success', message: 'Login successfully'
+                modalElement: registerModalSuccess, type: 'success', message: 'Login Successfully'
             })
-            for (let i = 0; i < inputRegister.length; i++) {
-                inputRegister[i].value = '';
-            }
+            registerName.value = '';
+            registerEmail.value = '';
+            registerPassword.value = '';
+            registerConfirmPassword.value = '';
             console.log(valueForm);
         }, 2000)
     }
@@ -147,11 +210,10 @@ function modal({ modalElement, type, message }) {
     modalElement.style.display = 'block';
     registerOverlay.style.display = 'block';
     if (type === 'success') {
-        registerSuccess.textContent = message;
-        registerSuccess.style.display = 'block'
+        registerModalMessage.textContent = message;
     } else if (type === 'error') {
-        registerError.style.display = 'block';
-        registerErrorMessage.textContent = message;
+        registerModalMessage.textContent = message;
+        registerButton.style.display = 'inline-block';
     }
 }
 
@@ -183,6 +245,10 @@ function checkUpperCase(str) {
     return check
 }
 
+function isValidForm() {
+    return nameElement.isValid && emailElement.isValid && passwordElement.isValid && confirmPasswordElement.isValid;
+}
+
 function removeAscent(str) {
     if (str === null || str === undefined) return str;
     str = str.toLowerCase();
@@ -194,31 +260,4 @@ function removeAscent(str) {
     str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
     str = str.replace(/đ/g, "d");
     return str;
-}
-
-function isValid(string) {
-    const re = /^[a-zA-Z ]{1,}$/g;
-    return re.test(removeAscent(string))
-}
-
-function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
-
-function validatePassword(password) {
-    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,}$/;
-    return re.test(password);
-}
-
-function validateConfirmPassword(confirmPassword) {
-    return confirmPassword === registerPassword.value;
-}
-
-function isEmpty(str) {
-    return (!str || 0 === str.length);
-}
-
-function isValidForm() {
-    return nameElement.success && emailElement.success && passwordElement.success && confirmPasswordElement.success;
 }

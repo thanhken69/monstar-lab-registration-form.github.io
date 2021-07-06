@@ -25,7 +25,8 @@
                 <div class="register__form-text">
                     <label class="register__label" for="registerName">Name</label> <br />
                     <input id="registerName" class="register__input" type="text" placeholder=" Enter name">
-                    <p id="messageName" class="register__message">Tên không được có ký tự đặc biệt.</p>
+                    <p id="messageName" for="registerName" class="register__message">Tên không được có ký tự đặc biệt.
+                    </p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="registerEmail">Email Address</label> <br />
@@ -54,16 +55,19 @@
                     </div>
                 </div>
 
-                <div class="register-modal" id="registerModalSuccess">
+                <div class="register__modal" id="registerModalSuccess">
                     <header class="register__notification">
                         <p class="register__notification-text">Thông báo</p>
                         <i id="registerClose" class="register__close fas fa-times"></i>
                     </header>
-                    <main id="registerSuccess" class="register__success"></main>
-                    <div id="registerError" class="register__error">
-                        <p id="registerErrorMessage" class="register__error-message"> </p>
-                        <div id="registerButton" class="register__btn">Try Again</div>
+                    <div>
+                        <div id="registerModalMessage" class="register__modal-message"></div>
                     </div>
+
+                    <footer class="register__modal-btn">
+                        <div id="registerButton" class="register__btn">Try Again</div>
+                        <div id="registerBtnClose" class="register__modal-btn-close">Close</div>
+                    </footer>
                 </div>
             </form>
         </div>
