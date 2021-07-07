@@ -25,7 +25,7 @@
                 <div class="register__form-text">
                     <label class="register__label" for="registerName">Name</label> <br />
                     <input id="registerName" class="register__input" type="text" placeholder=" Enter name">
-                    <p id="messageName" for="registerName" class="register__message">Tên không được có ký tự đặc biệt.
+                    <p id="messageName" class="register__message">Tên không được có ký tự đặc biệt.
                     </p>
                 </div>
                 <div class="register__form-text">
@@ -49,25 +49,25 @@
                     </p>
                 </div>
                 <div class="register__submit register__submit--disabel" id="registerSubmit">
-                    Submit
+                    <p id="submitContent" class="submit__content">Submit</p>
                     <div id="registerLoading" class="register__loading spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
+                        <span class="sr-only">Loading</span>
                     </div>
                 </div>
 
-                <div class="register__modal" id="registerModalSuccess">
-                    <header class="register__notification">
-                        <p class="register__notification-text">Thông báo</p>
+                <div id="registerModal" class="register__modal">
+                    <div class="modal__header">
+                        <div class="modal__title">Thông báo</div>
                         <i id="registerClose" class="register__close fas fa-times"></i>
-                    </header>
-                    <div>
-                        <div id="registerModalMessage" class="register__modal-message"></div>
                     </div>
-
-                    <footer class="register__modal-btn">
-                        <div id="registerButton" class="register__btn">Try Again</div>
-                        <div id="registerBtnClose" class="register__modal-btn-close">Close</div>
-                    </footer>
+                    <div id="modalContent" class="modal__content">
+                        Modal content
+                    </div>
+                    <div class="modal__footer">
+                        <div id="modalOk" class="modal__ok-button">OK</div>
+                        <div id="modalTryAgain" class="modal__again-button">Try Again</div>
+                        <div id="modalCancel" class="modal__cancel-button">Cancel</div>
+                    </div>
                 </div>
             </form>
         </div>

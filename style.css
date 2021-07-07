@@ -71,6 +71,10 @@
     cursor: not-allowed;
 }
 
+.submit__content {
+    display: inline-block;
+}
+
 .register__loading {
     margin-bottom: 3px;
     display: none;
@@ -90,13 +94,13 @@
     z-index: 1;
 }
 
-.register__notification {
+.modal__header {
     height: 50px;
     line-height: 50px;
     border-bottom: 2px solid black;
 }
 
-.register__notification-text {
+.modal__title {
     margin: 0 10px;
     display: inline;
     float: left;
@@ -110,29 +114,21 @@
 }
 
 
-.register__modal-message {
+.modal__content {
     margin-top: 100px;
     text-align: center;
     display: block;
 }
 
-.register__btn {
-    padding: 5px 20px;
-    margin-top: 50px;
-    background-color: #1c8ef9;
-    border-radius: 7px;
-    color: #ffff;
-    cursor: pointer;
-    display: none;
-}
-
-.register__modal-btn {
+.modal__footer {
     margin-top: 50px;
     text-align: center;
     display: block;
 }
 
-.register__modal-btn-close {
+.modal__cancel-button,
+.modal__again-button,
+.modal__ok-button {
     display: inline-block;
     padding: 5px 20px;
     margin-top: 50px;

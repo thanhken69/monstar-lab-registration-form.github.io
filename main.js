@@ -1,23 +1,13 @@
-let valueForm = {
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-}
-
 const nameElement = {
     id: "name",
     value: "",
-    registerElement: registerName,
-    message: messageName,
+    registerElement: domEl('registerName'),
+    message: domEl('messageName'),
     isValid: false,
     rules: {
         required: {
             value: true,
             errorMessage: 'Tên không được bỏ trống.',
-        }, maxLength: {
-            value: 8,
-            errorMessage: "Tên phải lớn hơn 8 ký tự.",
         },
         pattern: {
             value: function (value) {
@@ -26,18 +16,14 @@ const nameElement = {
             },
             errorMessage: "Tên chỉ chứa ký tự từ a đến Z.",
         },
-        customValidate: {
-            upperCaseFirstCharacter: {
-                validate: function (name) {
-                    let check = true;
-                    name = name.trim().split(' ');
-                    name.map(char => {
-                        if ((char[0] === char[0].toUpperCase()) === false) return check = false
-                    })
-                    return check
-                },
-                errorMessage: "Tên phải có ký tự đầu tiên viết hoa.",
+        upperCaseFirstCharacter: {
+            validate: function (name) {
+                const firstCharacter = name.trim().charCodeAt(0)
+                if (name !== '') {
+                    return (65 <= firstCharacter && firstCharacter <= 90 && (name !== ''))
+                } else return true
             },
+            errorMessage: "Tên phải có ký tự đầu tiên viết hoa.",
         },
     },
 };
@@ -45,8 +31,8 @@ const nameElement = {
 const emailElement = {
     id: "email",
     value: "",
-    registerElement: registerEmail,
-    message: messageEmail,
+    registerElement: domEl('registerEmail'),
+    message: domEl('messageEmail'),
     isValid: false,
     rules: {
         required: {
@@ -66,17 +52,19 @@ const emailElement = {
 const passwordElement = {
     id: "password",
     value: "",
-    registerElement: registerPassword,
-    message: messagePassword,
+    registerElement: domEl('registerPassword'),
+    message: domEl('messagePassword'),
     isValid: false,
     rules: {
         required: {
             value: true,
             errorMessage: "Password không được bỏ trống.",
+        }, minLength: {
+            value: 8,
+            errorMessage: "Mật khẩu có độ dài trên 8 ký tự.",
         }, maxLength: {
-            valueMin: 8,
-            valueMax: 32,
-            errorMessage: "Mật khẩu có độ dài trên 8 và nhỏ hơn 32 ký tự.",
+            value: 32,
+            errorMessage: "Mật khẩu có độ dài nhỏ hơn 32 ký tự.",
         },
         pattern: {
             value: function (password) {
@@ -91,80 +79,98 @@ const passwordElement = {
 const confirmPasswordElement = {
     id: "password",
     value: "",
-    registerElement: registerConfirmPassword,
-    message: messageConfirmPassword,
+    registerElement: domEl('registerConfirmPassword'),
+    message: domEl('messageConfirmPassword'),
     isValid: false,
     rules: {
         required: {
             value: true,
             errorMessage: "Xác nhận mật khẩu không được bỏ trống.",
         },
-        pattern: {
-            value: function validateConfirmPassword(confirmPassword) {
-                return confirmPassword === registerPassword.value;
-            },
-            errorMessage: "Xác nhận mật khẩu phải trùng khớp",
+        matchPassword: {
+            value: confirmPassword => confirmPassword === registerPassword.value,
+            errorMessage: "Xác nhận mật khẩu phải trùng khớp."
         }
     },
 };
 
+elementAddEventListener(nameElement, 'registerName');
+elementAddEventListener(emailElement, 'registerEmail');
+elementAddEventListener(passwordElement, 'registerPassword');
+elementAddEventListener(confirmPasswordElement, 'registerConfirmPassword');
 
-registerName.addEventListener('keyup', () => {
-    nameElement.value = registerName.value;
-    validateFieldTest(nameElement);
-    if (!nameElement.rules.customValidate.upperCaseFirstCharacter.validate(nameElement.value)) {
-        appendError(nameElement, nameElement.rules.customValidate.upperCaseFirstCharacter.errorMessage);
-    }
-    displaySubmit();
+domEl('registerPassword').addEventListener('input', () => {
+    validateField(confirmPasswordElement);
 })
 
-registerEmail.addEventListener('keyup', () => {
-    emailElement.value = registerEmail.value;
-    validateFieldTest(emailElement);
-    displaySubmit();
-})
-
-registerPassword.addEventListener('keyup', () => {
-    passwordElement.value = registerPassword.value;
-    validateFieldTest(passwordElement);
-    if (passwordElement.value !== '' && passwordElement.value.length < passwordElement.rules.maxLength.valueMin || passwordElement.value.length > passwordElement.rules.maxLength.valueMax) {
-        appendError(passwordElement, passwordElement.rules.maxLength.errorMessage);
-    }
-    validateFieldTest(confirmPasswordElement);
-    displaySubmit();
-})
-
-registerConfirmPassword.addEventListener('keyup', () => {
-    confirmPasswordElement.value = registerConfirmPassword.value;
-    validateFieldTest(confirmPasswordElement);
-    displaySubmit();
-})
-
-function validateFieldTest(element) {
-    if (element.value === '') {
-        appendError(element, element.rules.required.errorMessage);
-    } else if (!element.rules.pattern.value(element.value)) {
-        appendError(element, element.rules.pattern.errorMessage);
-    } else if (element.rules.pattern.value(element.value)) {
-        removeError(element);
-    }
-}
-
-registerSubmit.addEventListener('click', function () {
+domEl('registerSubmit').addEventListener('click', function () {
     submitForm();
 })
 
-registerClose.addEventListener('click', function () {
+domEl('registerClose').addEventListener('click', function () {
     closeModal();
 })
 
-registerBtnClose.addEventListener('click', function () {
+domEl('modalOk').addEventListener('click', function () {
     closeModal();
 })
 
-registerButton.addEventListener('click', function () {
+domEl('modalTryAgain').addEventListener('click', function () {
     closeModal();
+    location.reload();
 })
+
+domEl('modalCancel').addEventListener('click', function () {
+    closeModal();
+    location.reload();
+})
+
+function domEl(id) {
+    return document.getElementById(id);
+}
+
+function elementAddEventListener(element, id) {
+    const domEl = document.getElementById(id)
+    domEl.addEventListener('input', () => {
+        element.value = domEl.value;
+        validateField(element);
+        displaySubmit();
+    })
+}
+
+function validateField(element) {
+    if (element.value === '') {
+        appendError(element, element.rules.required.errorMessage);
+    } else if (element.rules.pattern !== undefined) {
+        if (!element.rules.pattern.value(element.value)) {
+            appendError(element, element.rules.pattern.errorMessage);
+        } else if (element.rules.pattern.value(element.value)) {
+            removeError(element);
+        }
+    }
+    if (element.rules.upperCaseFirstCharacter) {
+        if (!element.rules.upperCaseFirstCharacter.validate(element.value)) {
+            appendError(element, element.rules.upperCaseFirstCharacter.errorMessage);
+        }
+    }
+    if (element.rules.minLength) {
+        if (element.value !== '' && element.value.length < element.rules.minLength.value) {
+            appendError(element, element.rules.minLength.errorMessage);
+        }
+    }
+    if (element.rules.maxLength) {
+        if (element.value.length > element.rules.maxLength.value) {
+            appendError(element, element.rules.maxLength.errorMessage);
+        }
+    }
+    if (element.rules.matchPassword) {
+        if (!element.rules.matchPassword.value(element.value)) {
+            appendError(element, element.rules.matchPassword.errorMessage);
+        } else {
+            removeError(element)
+        }
+    }
+}
 
 function appendError(element, error) {
     element.message.textContent = error;
@@ -182,67 +188,64 @@ function removeError(element) {
 
 function submitForm() {
     if (isValidForm()) {
-        registerSubmit.classList.add('register__submit--disabel');
-        registerSubmit.classList.remove('register__submit--enable');
-        registerLoading.style.display = 'inline-block';
-
-        valueForm.name = nameElement.value;
-        valueForm.email = emailElement.value;
-        valueForm.password = passwordElement.value;
-        valueForm.confirmPassword = confirmPasswordElement.value
+        domEl('registerSubmit').classList.add('register__submit--disabel');
+        domEl('registerSubmit').classList.remove('register__submit--enable');
+        domEl('registerLoading').style.display = 'inline-block';
+        domEl('submitContent').textContent = 'Loading'
 
         setTimeout(function () {
-            registerLoading.style.display = 'none';
-
+            domEl('registerLoading').style.display = 'none';
+            domEl('submitContent').textContent = 'Submit';
             modal({
-                modalElement: registerModalSuccess, type: 'success', message: 'Login Successfully'
+                modalElement: domEl('registerModal'), type: 'success'
             })
             registerName.value = '';
             registerEmail.value = '';
             registerPassword.value = '';
             registerConfirmPassword.value = '';
-            console.log(valueForm);
+            console.log({
+                name: nameElement.value,
+                email: emailElement.value,
+                password: passwordElement.value,
+                confirmPassword: confirmPasswordElement.value
+            });
         }, 2000)
     }
 }
 
-function modal({ modalElement, type, message }) {
+modalTryAgain = document.getElementById('modalTryAgain')
+function modal({ modalElement, type }) {
     modalElement.style.display = 'block';
-    registerOverlay.style.display = 'block';
+    domEl('registerOverlay').style.display = 'block';
     if (type === 'success') {
-        registerModalMessage.textContent = message;
+        domEl('modalContent').textContent = 'Login Successfully';
+        domEl('modalTryAgain').style.display = 'none';
     } else if (type === 'error') {
-        registerModalMessage.textContent = message;
-        registerButton.style.display = 'inline-block';
+        domEl('modalContent').textContent = 'Login Failed';
+        domEl('modalCancel').style.display = 'inline-block';
+        domEl('modalCancel').style.backgroundColor = 'red';
+        domEl('modalOk').style.display = 'none';
+        domEl('modalTryAgain').style.backgroundColor = 'red';
     }
 }
 
 function closeModal() {
-    registerModalSuccess.style.display = 'none';
-    registerOverlay.style.display = 'none';
-    nameElement.success = false;
-    emailElement.success = false;
-    passwordElement.success = false;
-    confirmPasswordElement.success = false;
+    domEl('registerModal').style.display = 'none';
+    domEl('registerOverlay').style.display = 'none';
+    nameElement.isValid = false;
+    emailElement.isValid = false;
+    passwordElement.isValid = false;
+    confirmPasswordElement.isValid = false;
 }
 
 function displaySubmit() {
     if (isValidForm()) {
-        registerSubmit.classList.remove('register__submit--disabel');
-        registerSubmit.classList.add('register__submit--enable');
+        domEl('registerSubmit').classList.remove('register__submit--disabel');
+        domEl('registerSubmit').classList.add('register__submit--enable');
     } else {
-        registerSubmit.classList.add('register__submit--disabel');
-        registerSubmit.classList.remove('register__submit--enable');
+        domEl('registerSubmit').classList.add('register__submit--disabel');
+        domEl('registerSubmit').classList.remove('register__submit--enable');
     }
-}
-
-function checkUpperCase(str) {
-    let check = true;
-    str = str.trim().split(' ');
-    str.map(char => {
-        if ((char[0] === char[0].toUpperCase()) === false) return check = false
-    })
-    return check
 }
 
 function isValidForm() {
