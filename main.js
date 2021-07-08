@@ -1,8 +1,12 @@
 const nameElement = {
-    id: "name",
+    id: "register-name",
     value: "",
-    registerElement: domEl('registerName'),
-    message: domEl('messageName'),
+    get domElement() {
+        return domEl(this.id)
+    },
+    get messageDomElement() {
+        return domEl(`${this.id}-message`)
+    },
     isValid: false,
     rules: {
         required: {
@@ -10,18 +14,23 @@ const nameElement = {
             errorMessage: 'Tên không được bỏ trống.',
         },
         pattern: {
-            value: function (value) {
+            value: name => {
                 const re = /^[a-zA-Z ]{1,}$/g;
-                return re.test(removeAscent(value))
+                return re.test(removeAscent(name))
             },
             errorMessage: "Tên chỉ chứa ký tự từ a đến Z.",
         },
         upperCaseFirstCharacter: {
-            validate: function (name) {
-                const firstCharacter = name.trim().charCodeAt(0)
-                if (name !== '') {
-                    return (65 <= firstCharacter && firstCharacter <= 90 && (name !== ''))
-                } else return true
+            validate: name => {
+                isVali = true
+                name = removeAscent(name);
+                arr = name.trim().split(' ');
+                arr.map(char => {
+                    firstCharacter = char.charCodeAt(0);
+                    if (!(65 <= firstCharacter && firstCharacter <= 90)) isVali = false
+                    if (name === '') isVali = true
+                })
+                return isVali
             },
             errorMessage: "Tên phải có ký tự đầu tiên viết hoa.",
         },
@@ -29,10 +38,14 @@ const nameElement = {
 };
 
 const emailElement = {
-    id: "email",
+    id: "register-email",
     value: "",
-    registerElement: domEl('registerEmail'),
-    message: domEl('messageEmail'),
+    get domElement() {
+        return domEl(this.id)
+    },
+    get messageDomElement() {
+        return domEl(`${this.id}-message`)
+    },
     isValid: false,
     rules: {
         required: {
@@ -50,10 +63,14 @@ const emailElement = {
 };
 
 const passwordElement = {
-    id: "password",
+    id: "register-password",
     value: "",
-    registerElement: domEl('registerPassword'),
-    message: domEl('messagePassword'),
+    get domElement() {
+        return domEl(this.id)
+    },
+    get messageDomElement() {
+        return domEl(`${this.id}-message`)
+    },
     isValid: false,
     rules: {
         required: {
@@ -67,7 +84,7 @@ const passwordElement = {
             errorMessage: "Mật khẩu có độ dài nhỏ hơn 32 ký tự.",
         },
         pattern: {
-            value: function (password) {
+            value: password => {
                 const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,32}$/;
                 return re.test(password);
             },
@@ -77,10 +94,14 @@ const passwordElement = {
 };
 
 const confirmPasswordElement = {
-    id: "password",
+    id: "register-confirmpassword",
     value: "",
-    registerElement: domEl('registerConfirmPassword'),
-    message: domEl('messageConfirmPassword'),
+    get domElement() {
+        return domEl(this.id)
+    },
+    get messageDomElement() {
+        return domEl(`${this.id}-message`)
+    },
     isValid: false,
     rules: {
         required: {
@@ -88,39 +109,40 @@ const confirmPasswordElement = {
             errorMessage: "Xác nhận mật khẩu không được bỏ trống.",
         },
         matchPassword: {
-            value: confirmPassword => confirmPassword === registerPassword.value,
+            value: confirmPassword => confirmPassword === passwordElement.domElement.value,
             errorMessage: "Xác nhận mật khẩu phải trùng khớp."
         }
     },
 };
 
-elementAddEventListener(nameElement, 'registerName');
-elementAddEventListener(emailElement, 'registerEmail');
-elementAddEventListener(passwordElement, 'registerPassword');
-elementAddEventListener(confirmPasswordElement, 'registerConfirmPassword');
+elementAddEventListener(nameElement);
+elementAddEventListener(emailElement);
+elementAddEventListener(passwordElement);
+elementAddEventListener(confirmPasswordElement);
 
-domEl('registerPassword').addEventListener('input', () => {
+domEl('register-password').addEventListener('input', () => {
     validateField(confirmPasswordElement);
+    displaySubmit();
 })
 
-domEl('registerSubmit').addEventListener('click', function () {
+domEl('register-submit').addEventListener('click', function () {
     submitForm();
 })
 
-domEl('registerClose').addEventListener('click', function () {
+domEl('register-close').addEventListener('click', function () {
     closeModal();
 })
 
-domEl('modalOk').addEventListener('click', function () {
+domEl('modal-ok').addEventListener('click', function () {
     closeModal();
 })
 
-domEl('modalTryAgain').addEventListener('click', function () {
+domEl('modal-tryagain').addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-domEl('modalCancel').addEventListener('click', function () {
+domEl('modal-cancel').addEventListener('click', function () {
     closeModal();
     location.reload();
 })
@@ -129,8 +151,8 @@ function domEl(id) {
     return document.getElementById(id);
 }
 
-function elementAddEventListener(element, id) {
-    const domEl = document.getElementById(id)
+function elementAddEventListener(element) {
+    const domEl = document.getElementById(element.id)
     domEl.addEventListener('input', () => {
         element.value = domEl.value;
         validateField(element);
@@ -139,9 +161,9 @@ function elementAddEventListener(element, id) {
 }
 
 function validateField(element) {
-    if (element.value === '') {
+    if (element.value === '' && element.rules.required.value === true) {
         appendError(element, element.rules.required.errorMessage);
-    } else if (element.rules.pattern !== undefined) {
+    } else if (element.rules.pattern) {
         if (!element.rules.pattern.value(element.value)) {
             appendError(element, element.rules.pattern.errorMessage);
         } else if (element.rules.pattern.value(element.value)) {
@@ -173,36 +195,36 @@ function validateField(element) {
 }
 
 function appendError(element, error) {
-    element.message.textContent = error;
-    element.registerElement.style.borderColor = 'red';
-    element.message.style.color = 'red';
-    element.message.style.visibility = 'visible';
+    element.messageDomElement.textContent = error;
+    element.domElement.style.borderColor = 'red';
+    element.messageDomElement.style.color = 'red';
+    element.messageDomElement.style.visibility = 'visible';
     element.isValid = false;
 }
 
 function removeError(element) {
-    element.registerElement.style.borderColor = 'black';
-    element.message.style.visibility = 'hidden';
+    element.domElement.style.borderColor = 'black';
+    element.messageDomElement.style.visibility = 'hidden';
     element.isValid = true;
 }
 
 function submitForm() {
     if (isValidForm()) {
-        domEl('registerSubmit').classList.add('register__submit--disabel');
-        domEl('registerSubmit').classList.remove('register__submit--enable');
-        domEl('registerLoading').style.display = 'inline-block';
-        domEl('submitContent').textContent = 'Loading'
+        domEl('register-submit').classList.add('register__submit--disabel');
+        domEl('register-submit').classList.remove('register__submit--enable');
+        domEl('register-loading').style.display = 'inline-block';
+        domEl('submit-content').textContent = 'Loading'
 
         setTimeout(function () {
-            domEl('registerLoading').style.display = 'none';
-            domEl('submitContent').textContent = 'Submit';
+            domEl('register-loading').style.display = 'none';
+            domEl('submit-content').textContent = 'Submit';
             modal({
-                modalElement: domEl('registerModal'), type: 'success'
+                modalElement: domEl('register-modal'), type: 'error'
             })
-            registerName.value = '';
-            registerEmail.value = '';
-            registerPassword.value = '';
-            registerConfirmPassword.value = '';
+            domEl('register-name').value = '';
+            domEl('register-email').value = '';
+            domEl('register-password').value = '';
+            domEl('register-confirmpassword').value = '';
             console.log({
                 name: nameElement.value,
                 email: emailElement.value,
@@ -216,22 +238,22 @@ function submitForm() {
 modalTryAgain = document.getElementById('modalTryAgain')
 function modal({ modalElement, type }) {
     modalElement.style.display = 'block';
-    domEl('registerOverlay').style.display = 'block';
+    domEl('register-overlay').style.display = 'block';
     if (type === 'success') {
-        domEl('modalContent').textContent = 'Login Successfully';
-        domEl('modalTryAgain').style.display = 'none';
+        domEl('modal-content').textContent = 'Login Successfully';
+        domEl('modal-tryagain').style.display = 'none';
     } else if (type === 'error') {
-        domEl('modalContent').textContent = 'Login Failed';
-        domEl('modalCancel').style.display = 'inline-block';
-        domEl('modalCancel').style.backgroundColor = 'red';
-        domEl('modalOk').style.display = 'none';
-        domEl('modalTryAgain').style.backgroundColor = 'red';
+        domEl('modal-content').textContent = 'Login Failed';
+        domEl('modal-cancel').style.display = 'inline-block';
+        domEl('modal-cancel').style.backgroundColor = 'red';
+        domEl('modal-ok').style.display = 'none';
+        domEl('modal-tryagain').style.backgroundColor = 'red';
     }
 }
 
 function closeModal() {
-    domEl('registerModal').style.display = 'none';
-    domEl('registerOverlay').style.display = 'none';
+    domEl('register-modal').style.display = 'none';
+    domEl('register-overlay').style.display = 'none';
     nameElement.isValid = false;
     emailElement.isValid = false;
     passwordElement.isValid = false;
@@ -240,11 +262,11 @@ function closeModal() {
 
 function displaySubmit() {
     if (isValidForm()) {
-        domEl('registerSubmit').classList.remove('register__submit--disabel');
-        domEl('registerSubmit').classList.add('register__submit--enable');
+        domEl('register-submit').classList.remove('register__submit--disabel');
+        domEl('register-submit').classList.add('register__submit--enable');
     } else {
-        domEl('registerSubmit').classList.add('register__submit--disabel');
-        domEl('registerSubmit').classList.remove('register__submit--enable');
+        domEl('register-submit').classList.add('register__submit--disabel');
+        domEl('register-submit').classList.remove('register__submit--enable');
     }
 }
 
@@ -254,13 +276,19 @@ function isValidForm() {
 
 function removeAscent(str) {
     if (str === null || str === undefined) return str;
-    str = str.toLowerCase();
     str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
     str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/đ/g, "d");
     str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
     str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
     str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
     str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-    str = str.replace(/đ/g, "d");
+    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+    str = str.replace(/Đ/g, "D");
+    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ế|Ệ|Ể|Ễ/g, "E");
+    str = str.replace(/I|Í|Ị|Ỉ|Ĩ/g, "I");
+    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
     return str;
 }

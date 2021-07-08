@@ -20,53 +20,53 @@
     <section class="register__section">
         <div class="container">
             <form class="register__form">
-                <div id="registerOverlay" class="register__overlay"></div>
+                <div id="register-overlay" class="register__overlay"></div>
                 <h2 class="register__name">Register</h2>
                 <div class="register__form-text">
                     <label class="register__label" for="registerName">Name</label> <br />
-                    <input id="registerName" class="register__input" type="text" placeholder=" Enter name">
-                    <p id="messageName" class="register__message">Tên không được có ký tự đặc biệt.
+                    <input id="register-name" class="register__input" type="text" placeholder=" Enter name">
+                    <p id="register-name-message" class="register__message">Tên không được có ký tự đặc biệt.
                     </p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="registerEmail">Email Address</label> <br />
-                    <input id="registerEmail" class="register__input" type="email" placeholder=" Enter email">
-                    <p id="messageEmail" class="register__message">Nhập đúng email của bạn.</p>
+                    <input id="register-email" class="register__input" type="email" placeholder=" Enter email">
+                    <p id="register-email-message" class="register__message">Nhập đúng email của bạn.</p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="registerPassword">Password</label> <br />
-                    <input id="registerPassword" class="register__input" type="password" placeholder=" Enter password">
-                    <p id="messagePassword" class="register__message">
+                    <input id="register-password" class="register__input" type="password" placeholder=" Enter password">
+                    <p id="register-password-message" class="register__message">
                         Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.
                     </p>
                 </div>
                 <div class="register__form-text">
                     <label class="register__label" for="registerConfirmPassword">Confirm Password</label> <br />
-                    <input id="registerConfirmPassword" class="register__input" type="password"
+                    <input id="register-confirmpassword" class="register__input" type="password"
                         placeholder=" Confirm password">
-                    <p id="messageConfirmPassword" class="register__message">
+                    <p id="register-confirmpassword-message" class="register__message">
                         Xác nhận mật khẩu phải trùng khớp.
                     </p>
                 </div>
-                <div class="register__submit register__submit--disabel" id="registerSubmit">
-                    <p id="submitContent" class="submit__content">Submit</p>
-                    <div id="registerLoading" class="register__loading spinner-border spinner-border-sm" role="status">
+                <div class="register__submit register__submit--disabel" id="register-submit">
+                    <p id="submit-content" class="submit__content">Submit</p>
+                    <div id="register-loading" class="register__loading spinner-border spinner-border-sm" role="status">
                         <span class="sr-only">Loading</span>
                     </div>
                 </div>
 
-                <div id="registerModal" class="register__modal">
+                <div id="register-modal" class="register__modal">
                     <div class="modal__header">
                         <div class="modal__title">Thông báo</div>
-                        <i id="registerClose" class="register__close fas fa-times"></i>
+                        <i id="register-close" class="register__close fas fa-times"></i>
                     </div>
-                    <div id="modalContent" class="modal__content">
+                    <div id="modal-content" class="modal__content">
                         Modal content
                     </div>
                     <div class="modal__footer">
-                        <div id="modalOk" class="modal__ok-button">OK</div>
-                        <div id="modalTryAgain" class="modal__again-button">Try Again</div>
-                        <div id="modalCancel" class="modal__cancel-button">Cancel</div>
+                        <div id="modal-ok" class="modal__ok-button">OK</div>
+                        <div id="modal-tryagain" class="modal__again-button">Try Again</div>
+                        <div id="modal-cancel" class="modal__cancel-button">Cancel</div>
                     </div>
                 </div>
             </form>
