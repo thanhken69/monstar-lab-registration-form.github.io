@@ -21,22 +21,22 @@ const registerElement = [
                 },
                 errorMessage: "Tên chỉ chứa ký tự từ a đến Z.",
             },
-            // customValidate: {
-            upperCaseFirstCharacter: {
-                validate: name => {
-                    isValid = true
-                    name = removeAscent(name);
-                    arr = name.trim().split(' ');
-                    arr.map(char => {
-                        firstCharacter = char.charCodeAt(0);
-                        if (!(65 <= firstCharacter && firstCharacter <= 90)) isValid = false
-                        if (name === '') isValid = true
-                    })
-                    return isValid
-                },
-                errorMessage: "Tên phải có ký tự đầu tiên viết hoa."
+            customValidate: {
+                upperCaseFirstCharacter: {
+                    validate: name => {
+                        isValid = true
+                        name = removeAscent(name);
+                        arr = name.trim().split(' ');
+                        arr.map(char => {
+                            firstCharacter = char.charCodeAt(0);
+                            if (!(65 <= firstCharacter && firstCharacter <= 90)) isValid = false
+                            if (name === '') isValid = true
+                        })
+                        return isValid
+                    },
+                    errorMessage: "Tên phải có ký tự đầu tiên viết hoa."
+                }
             }
-            // }
         }
     },
 
@@ -92,7 +92,7 @@ const registerElement = [
                     return re.test(password);
                 },
                 errorMessage: "Mật khẩu bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.",
-            }
+            },
         },
     },
 
@@ -111,9 +111,11 @@ const registerElement = [
                 value: true,
                 errorMessage: "Xác nhận mật khẩu không được bỏ trống.",
             },
-            matchPassword: {
-                value: confirmPassword => confirmPassword === passwordElement.domElement.value,
-                errorMessage: "Xác nhận mật khẩu phải trùng khớp."
+            customValidate: {
+                matchPassword: {
+                    value: confirmPassword => confirmPassword === passwordElement.domElement.value,
+                    errorMessage: "Xác nhận mật khẩu phải trùng khớp."
+                }
             }
         },
     }
@@ -178,9 +180,11 @@ function validateField(element) {
                 }
                 break;
             case 2:
-                if (element.rules.upperCaseFirstCharacter) {
-                    if (!element.rules.upperCaseFirstCharacter.validate(element.value)) {
-                        appendError(element, element.rules.upperCaseFirstCharacter.errorMessage);
+                if (element.rules.customValidate) {
+                    if (element.rules.customValidate.upperCaseFirstCharacter) {
+                        if (!element.rules.customValidate.upperCaseFirstCharacter.validate(element.value)) {
+                            appendError(element, element.rules.customValidate.upperCaseFirstCharacter.errorMessage);
+                        }
                     }
                 }
                 break;
@@ -199,20 +203,22 @@ function validateField(element) {
                 }
                 break;
             case 5:
-                if (element.rules.matchPassword) {
-                    if (!element.rules.matchPassword.value(element.value)) {
-                        appendError(element, element.rules.matchPassword.errorMessage);
-                    } else {
-                        removeError(element)
+                if (element.rules.customValidate) {
+                    if (element.rules.customValidate.matchPassword) {
+                        if (!element.rules.customValidate.matchPassword.value(element.value)) {
+                            appendError(element, element.rules.customValidate.matchPassword.errorMessage);
+                        } else {
+                            removeError(element)
+                        }
                     }
                 }
                 break;
             case 6:
                 if (element = passwordElement) {
-                    if (!confirmPasswordElement.rules.matchPassword.value(confirmPasswordElement.value)) {
-                        appendError(confirmPasswordElement, confirmPasswordElement.rules.matchPassword.errorMessage);
+                    if (!confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value)) {
+                        appendError(confirmPasswordElement, confirmPasswordElement.rules.customValidate.matchPassword.errorMessage);
                     }
-                    else if (confirmPasswordElement.rules.matchPassword.value(confirmPasswordElement.value) && confirmPasswordElement.value !== '') {
+                    else if (confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value) && confirmPasswordElement.value !== '') {
                         removeError(confirmPasswordElement)
                     }
                 }
