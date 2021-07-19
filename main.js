@@ -1,5 +1,5 @@
-const registerElement = [
-    nameElement = {
+let registerElement = {
+    nameElement: {
         id: "register-name",
         value: "",
         get domElement() {
@@ -23,7 +23,7 @@ const registerElement = [
             },
             customValidate: {
                 upperCaseFirstCharacter: {
-                    validate: name => {
+                    value: name => {
                         isValid = true
                         name = removeAscent(name);
                         arr = name.trim().split(' ');
@@ -40,7 +40,7 @@ const registerElement = [
         }
     },
 
-    emailElement = {
+    emailElement: {
         id: "register-email",
         value: "",
         get domElement() {
@@ -65,7 +65,7 @@ const registerElement = [
         }
     },
 
-    passwordElement = {
+    passwordElement: {
         id: "register-password",
         value: "",
         get domElement() {
@@ -96,7 +96,7 @@ const registerElement = [
         },
     },
 
-    confirmPasswordElement = {
+    confirmPasswordElement: {
         id: "register-confirmpassword",
         value: "",
         get domElement() {
@@ -113,16 +113,16 @@ const registerElement = [
             },
             customValidate: {
                 matchPassword: {
-                    value: confirmPassword => confirmPassword === passwordElement.domElement.value,
+                    value: confirmPassword => (confirmPassword === registerElement.passwordElement.value && confirmPassword !== ''),
                     errorMessage: "Xác nhận mật khẩu phải trùng khớp."
                 }
             }
         },
     }
-]
+}
 
-for (let i = 0; i < registerElement.length; i++) {
-    elementAddEventListener(registerElement[i]);
+for (let element of Object.values(registerElement)) {
+    elementAddEventListener(element);
 }
 
 domEl('register-submit').addEventListener('click', function () {
@@ -173,12 +173,6 @@ function validateField(element) {
 
     if (!element.value && element.rules.required.value) {
         appendError(element, element.rules.required.errorMessage);
-    } else if (element.rules.customValidate) {
-        if (element.rules.customValidate.upperCaseFirstCharacter) {
-            if (!element.rules.customValidate.upperCaseFirstCharacter.validate(element.value)) {
-                appendError(element, element.rules.customValidate.upperCaseFirstCharacter.errorMessage);
-            }
-        }
     } else if (element.rules.minLength) {
         if (element.value.length < element.rules.minLength.value) {
             appendError(element, element.rules.minLength.errorMessage);
@@ -188,21 +182,17 @@ function validateField(element) {
             appendError(element, element.rules.maxLength.errorMessage);
         }
     } else if (element.rules.customValidate) {
-        if (element.rules.customValidate.matchPassword) {
-            if (!element.rules.customValidate.matchPassword.value(element.value)) {
-                appendError(element, element.rules.customValidate.matchPassword.errorMessage);
-            } else {
-                removeError(element)
-            }
+        if (!Object.values(element.rules.customValidate)[0].value(element.value)) {
+            appendError(element, Object.values(element.rules.customValidate)[0].errorMessage);
         }
     }
 
-    if (element = passwordElement) {
-        if (!confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value)) {
-            appendError(confirmPasswordElement, confirmPasswordElement.rules.customValidate.matchPassword.errorMessage);
+    if (registerElement.confirmPasswordElement.value !== '') {
+        if (!Object.values(registerElement.confirmPasswordElement.rules.customValidate)[0].value(registerElement.confirmPasswordElement.value)) {
+            appendError(registerElement.confirmPasswordElement, Object.values(registerElement.confirmPasswordElement.rules.customValidate)[0].errorMessage);
         }
-        else if (confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value) && confirmPasswordElement.value !== '') {
-            removeError(confirmPasswordElement)
+        else {
+            removeError(registerElement.confirmPasswordElement);
         }
     }
 }
@@ -234,15 +224,12 @@ function submitForm() {
             modal({
                 modalElement: domEl('register-modal'), type: 'success', message: 'Login successfully'
             })
-            domEl('register-name').value = '';
-            domEl('register-email').value = '';
-            domEl('register-password').value = '';
-            domEl('register-confirmpassword').value = '';
+
             console.log({
-                name: nameElement.value,
-                email: emailElement.value,
-                password: passwordElement.value,
-                confirmPassword: confirmPasswordElement.value
+                name: registerElement.nameElement.value,
+                email: registerElement.emailElement.value,
+                password: registerElement.passwordElement.value,
+                confirmPassword: registerElement.confirmPasswordElement.value
             });
         }, 2000)
     }
@@ -266,10 +253,10 @@ function modal({ modalElement, type, message }) {
 function closeModal() {
     domEl('register-modal').style.display = 'none';
     domEl('register-overlay').style.display = 'none';
-    nameElement.isValid = false;
-    emailElement.isValid = false;
-    passwordElement.isValid = false;
-    confirmPasswordElement.isValid = false;
+    registerElement.nameElement.isValid = false;
+    registerElement.emailElement.isValid = false;
+    registerElement.passwordElement.isValid = false;
+    registerElement.confirmPasswordElement.isValid = false;
 }
 
 function displaySubmit() {
@@ -283,7 +270,7 @@ function displaySubmit() {
 }
 
 function isValidForm() {
-    return nameElement.isValid && emailElement.isValid && passwordElement.isValid && confirmPasswordElement.isValid;
+    return registerElement.nameElement.isValid && registerElement.emailElement.isValid && registerElement.passwordElement.isValid && registerElement.confirmPasswordElement.isValid;
 }
 
 function removeAscent(str) {
