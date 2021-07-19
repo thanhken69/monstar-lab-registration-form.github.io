@@ -163,66 +163,46 @@ function elementAddEventListener(element) {
 }
 
 function validateField(element) {
-    for (let i = 0; i <= 6; i++) {
-        switch (i) {
-            case 0:
-                if (element.rules.pattern) {
-                    if (!element.rules.pattern.value(element.value)) {
-                        appendError(element, element.rules.pattern.errorMessage);
-                    } else {
-                        removeError(element);
-                    }
-                }
-                break;
-            case 1:
-                if (!element.value && element.rules.required.value) {
-                    appendError(element, element.rules.required.errorMessage);
-                }
-                break;
-            case 2:
-                if (element.rules.customValidate) {
-                    if (element.rules.customValidate.upperCaseFirstCharacter) {
-                        if (!element.rules.customValidate.upperCaseFirstCharacter.validate(element.value)) {
-                            appendError(element, element.rules.customValidate.upperCaseFirstCharacter.errorMessage);
-                        }
-                    }
-                }
-                break;
-            case 3:
-                if (element.rules.minLength) {
-                    if (element.value.length < element.rules.minLength.value) {
-                        appendError(element, element.rules.minLength.errorMessage);
-                    }
-                }
-                break;
-            case 4:
-                if (element.rules.maxLength) {
-                    if (element.value.length > element.rules.maxLength.value) {
-                        appendError(element, element.rules.maxLength.errorMessage);
-                    }
-                }
-                break;
-            case 5:
-                if (element.rules.customValidate) {
-                    if (element.rules.customValidate.matchPassword) {
-                        if (!element.rules.customValidate.matchPassword.value(element.value)) {
-                            appendError(element, element.rules.customValidate.matchPassword.errorMessage);
-                        } else {
-                            removeError(element)
-                        }
-                    }
-                }
-                break;
-            case 6:
-                if (element = passwordElement) {
-                    if (!confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value)) {
-                        appendError(confirmPasswordElement, confirmPasswordElement.rules.customValidate.matchPassword.errorMessage);
-                    }
-                    else if (confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value) && confirmPasswordElement.value !== '') {
-                        removeError(confirmPasswordElement)
-                    }
-                }
-                break;
+    if (element.rules.pattern) {
+        if (!element.rules.pattern.value(element.value)) {
+            appendError(element, element.rules.pattern.errorMessage);
+        } else {
+            removeError(element);
+        }
+    }
+
+    if (!element.value && element.rules.required.value) {
+        appendError(element, element.rules.required.errorMessage);
+    } else if (element.rules.customValidate) {
+        if (element.rules.customValidate.upperCaseFirstCharacter) {
+            if (!element.rules.customValidate.upperCaseFirstCharacter.validate(element.value)) {
+                appendError(element, element.rules.customValidate.upperCaseFirstCharacter.errorMessage);
+            }
+        }
+    } else if (element.rules.minLength) {
+        if (element.value.length < element.rules.minLength.value) {
+            appendError(element, element.rules.minLength.errorMessage);
+        }
+    } else if (element.rules.maxLength) {
+        if (element.value.length > element.rules.maxLength.value) {
+            appendError(element, element.rules.maxLength.errorMessage);
+        }
+    } else if (element.rules.customValidate) {
+        if (element.rules.customValidate.matchPassword) {
+            if (!element.rules.customValidate.matchPassword.value(element.value)) {
+                appendError(element, element.rules.customValidate.matchPassword.errorMessage);
+            } else {
+                removeError(element)
+            }
+        }
+    }
+
+    if (element = passwordElement) {
+        if (!confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value)) {
+            appendError(confirmPasswordElement, confirmPasswordElement.rules.customValidate.matchPassword.errorMessage);
+        }
+        else if (confirmPasswordElement.rules.customValidate.matchPassword.value(confirmPasswordElement.value) && confirmPasswordElement.value !== '') {
+            removeError(confirmPasswordElement)
         }
     }
 }
