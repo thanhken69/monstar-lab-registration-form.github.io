@@ -1,3 +1,14 @@
+let submit = domEl('register-submit');
+let close = domEl('register-close');
+let ok = domEl('modal-ok');
+let tryAgain = domEl('modal-tryagain');
+let cancel = domEl('modal-cancel');
+let loading = domEl('register-loading');
+let submitContent = domEl('submit-content');
+let registerModal = domEl('register-modal');
+let overlay = domEl('register-overlay');
+let modalContent = domEl('modal-content');
+
 let registerElement = {
     nameElement: {
         id: "register-name",
@@ -113,7 +124,9 @@ let registerElement = {
             },
             customValidate: {
                 matchPassword: {
-                    value: confirmPassword => (confirmPassword === registerElement.passwordElement.value && confirmPassword !== ''),
+                    value: confirmPassword => {
+                        return confirmPassword === registerElement.passwordElement.value
+                    },
                     errorMessage: "Xác nhận mật khẩu phải trùng khớp."
                 }
             }
@@ -125,26 +138,26 @@ for (let element of Object.values(registerElement)) {
     elementAddEventListener(element);
 }
 
-domEl('register-submit').addEventListener('click', function () {
+submit.addEventListener('click', function () {
     submitForm();
 })
 
-domEl('register-close').addEventListener('click', function () {
+close.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-domEl('modal-ok').addEventListener('click', function () {
+ok.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-domEl('modal-tryagain').addEventListener('click', function () {
+tryAgain.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-domEl('modal-cancel').addEventListener('click', function () {
+cancel.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
@@ -173,17 +186,15 @@ function validateField(element) {
 
     if (!element.value && element.rules.required.value) {
         appendError(element, element.rules.required.errorMessage);
-    } else if (element.rules.minLength) {
-        if (element.value.length < element.rules.minLength.value) {
-            appendError(element, element.rules.minLength.errorMessage);
-        }
-    } else if (element.rules.maxLength) {
-        if (element.value.length > element.rules.maxLength.value) {
-            appendError(element, element.rules.maxLength.errorMessage);
-        }
+    } else if (element.rules.minLength && element.value.length < element.rules.minLength.value) {
+        appendError(element, element.rules.minLength.errorMessage);
+    } else if (element.rules.maxLength && element.value.length > element.rules.maxLength.value) {
+        appendError(element, element.rules.maxLength.errorMessage);
     } else if (element.rules.customValidate) {
-        if (!Object.values(element.rules.customValidate)[0].value(element.value)) {
-            appendError(element, Object.values(element.rules.customValidate)[0].errorMessage);
+        for (let valid of Object.values(element.rules.customValidate)) {
+            if (!valid.value(element.value)) {
+                appendError(element, valid.errorMessage);
+            }
         }
     }
 
@@ -196,6 +207,8 @@ function validateField(element) {
         }
     }
 }
+
+console.log(Object.values(registerElement.confirmPasswordElement.rules.customValidate))
 
 function appendError(element, error) {
     element.messageDomElement.textContent = error;
@@ -213,16 +226,16 @@ function removeError(element) {
 
 function submitForm() {
     if (isValidForm()) {
-        domEl('register-submit').classList.add('register__submit--disabel');
-        domEl('register-submit').classList.remove('register__submit--enable');
-        domEl('register-loading').style.display = 'inline-block';
-        domEl('submit-content').textContent = 'Loading'
+        submit.classList.add('register__submit--disabel');
+        submit.classList.remove('register__submit--enable');
+        loading.style.display = 'inline-block';
+        submitContent.textContent = 'Loading'
 
         setTimeout(function () {
-            domEl('register-loading').style.display = 'none';
-            domEl('submit-content').textContent = 'Submit';
+            loading.style.display = 'none';
+            submitContent.textContent = 'Submit';
             modal({
-                modalElement: domEl('register-modal'), type: 'success', message: 'Login successfully'
+                modalElement: registerModal, type: 'success', message: 'Login successfully'
             })
 
             console.log({
@@ -237,22 +250,22 @@ function submitForm() {
 
 function modal({ modalElement, type, message }) {
     modalElement.style.display = 'block';
-    domEl('register-overlay').style.display = 'block';
+    overlay.style.display = 'block';
     if (type === 'success') {
-        domEl('modal-content').textContent = message;
-        domEl('modal-tryagain').style.display = 'none';
+        modalContent.textContent = message;
+        tryAgain.style.display = 'none';
     } else if (type === 'error') {
-        domEl('modal-content').textContent = message;
-        domEl('modal-cancel').style.display = 'inline-block';
-        domEl('modal-cancel').style.backgroundColor = 'red';
-        domEl('modal-ok').style.display = 'none';
-        domEl('modal-tryagain').style.backgroundColor = 'red';
+        modalContent.textContent = message;
+        cancel.style.display = 'inline-block';
+        cancel.style.backgroundColor = 'red';
+        ok.style.display = 'none';
+        tryAgain.style.backgroundColor = 'red';
     }
 }
 
 function closeModal() {
-    domEl('register-modal').style.display = 'none';
-    domEl('register-overlay').style.display = 'none';
+    registerModal.style.display = 'none';
+    overlay.style.display = 'none';
     registerElement.nameElement.isValid = false;
     registerElement.emailElement.isValid = false;
     registerElement.passwordElement.isValid = false;
@@ -261,11 +274,11 @@ function closeModal() {
 
 function displaySubmit() {
     if (isValidForm()) {
-        domEl('register-submit').classList.remove('register__submit--disabel');
-        domEl('register-submit').classList.add('register__submit--enable');
+        submit.classList.remove('register__submit--disabel');
+        submit.classList.add('register__submit--enable');
     } else {
-        domEl('register-submit').classList.add('register__submit--disabel');
-        domEl('register-submit').classList.remove('register__submit--enable');
+        submit.classList.add('register__submit--disabel');
+        submit.classList.remove('register__submit--enable');
     }
 }
 
