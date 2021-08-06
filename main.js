@@ -1,13 +1,13 @@
-let submit = domEl('register-submit');
-let close = domEl('register-close');
-let ok = domEl('modal-ok');
-let tryAgain = domEl('modal-tryagain');
-let cancel = domEl('modal-cancel');
-let loading = domEl('register-loading');
-let submitContent = domEl('submit-content');
-let registerModal = domEl('register-modal');
-let overlay = domEl('register-overlay');
-let modalContent = domEl('modal-content');
+const formSubmit = domEl('register-submit');
+const formCloseButton = domEl('register-close');
+const formOkButton = domEl('modal-ok');
+const formTryAgainButton = domEl('modal-tryagain');
+const formCancelButton = domEl('modal-cancel');
+const submitLoading = domEl('register-loading');
+const submitContent = domEl('submit-content');
+const registerModal = domEl('register-modal');
+const formOverlay = domEl('register-overlay');
+const modalContent = domEl('modal-content');
 
 let registerElement = {
     nameElement: {
@@ -99,7 +99,7 @@ let registerElement = {
             },
             pattern: {
                 value: password => {
-                    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,32}$/;
+                    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{0,}$/;
                     return re.test(password);
                 },
                 errorMessage: "Mật khẩu bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.",
@@ -138,26 +138,26 @@ for (let element of Object.values(registerElement)) {
     elementAddEventListener(element);
 }
 
-submit.addEventListener('click', function () {
+formSubmit.addEventListener('click', function () {
     submitForm();
 })
 
-close.addEventListener('click', function () {
+formCloseButton.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-ok.addEventListener('click', function () {
+formOkButton.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-tryAgain.addEventListener('click', function () {
+formTryAgainButton.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
 
-cancel.addEventListener('click', function () {
+formCancelButton.addEventListener('click', function () {
     closeModal();
     location.reload();
 })
@@ -176,39 +176,35 @@ function elementAddEventListener(element) {
 }
 
 function validateField(element) {
-    if (element.rules.pattern) {
-        if (!element.rules.pattern.value(element.value)) {
-            appendError(element, element.rules.pattern.errorMessage);
-        } else {
-            removeError(element);
-        }
-    }
-
     if (!element.value && element.rules.required.value) {
         appendError(element, element.rules.required.errorMessage);
+    } else if (element.rules.pattern && !element.rules.pattern.value(element.value)) {
+        appendError(element, element.rules.pattern.errorMessage);
     } else if (element.rules.minLength && element.value.length < element.rules.minLength.value) {
         appendError(element, element.rules.minLength.errorMessage);
     } else if (element.rules.maxLength && element.value.length > element.rules.maxLength.value) {
         appendError(element, element.rules.maxLength.errorMessage);
-    } else if (element.rules.customValidate) {
-        for (let valid of Object.values(element.rules.customValidate)) {
-            if (!valid.value(element.value)) {
-                appendError(element, valid.errorMessage);
-            }
-        }
+    } else {
+        removeError(element)
     }
 
-    if (registerElement.confirmPasswordElement.value !== '') {
-        if (!Object.values(registerElement.confirmPasswordElement.rules.customValidate)[0].value(registerElement.confirmPasswordElement.value)) {
-            appendError(registerElement.confirmPasswordElement, Object.values(registerElement.confirmPasswordElement.rules.customValidate)[0].errorMessage);
+    if (element.rules.customValidate) {
+        for (const validation of Object.values(element.rules.customValidate)) {
+            if (!validation.value(element.value)) {
+                appendError(element, validation.errorMessage);
+                break;
+            }
+        }
+    } if (registerElement.confirmPasswordElement.value !== '') {
+        const matchPassword = registerElement.confirmPasswordElement.rules.customValidate.matchPassword;
+        if (!matchPassword.value(registerElement.confirmPasswordElement.value)) {
+            appendError(registerElement.confirmPasswordElement, matchPassword.errorMessage);
         }
         else {
             removeError(registerElement.confirmPasswordElement);
         }
     }
 }
-
-console.log(Object.values(registerElement.confirmPasswordElement.rules.customValidate))
 
 function appendError(element, error) {
     element.messageDomElement.textContent = error;
@@ -226,13 +222,13 @@ function removeError(element) {
 
 function submitForm() {
     if (isValidForm()) {
-        submit.classList.add('register__submit--disabel');
-        submit.classList.remove('register__submit--enable');
-        loading.style.display = 'inline-block';
+        formSubmit.classList.add('register__submit--disabel');
+        formSubmit.classList.remove('register__submit--enable');
+        submitLoading.style.display = 'inline-block';
         submitContent.textContent = 'Loading'
 
         setTimeout(function () {
-            loading.style.display = 'none';
+            submitLoading.style.display = 'none';
             submitContent.textContent = 'Submit';
             modal({
                 modalElement: registerModal, type: 'success', message: 'Login successfully'
@@ -250,35 +246,34 @@ function submitForm() {
 
 function modal({ modalElement, type, message }) {
     modalElement.style.display = 'block';
-    overlay.style.display = 'block';
+    formOverlay.style.display = 'block';
     if (type === 'success') {
         modalContent.textContent = message;
-        tryAgain.style.display = 'none';
+        formTryAgainButton.style.display = 'none';
     } else if (type === 'error') {
         modalContent.textContent = message;
-        cancel.style.display = 'inline-block';
-        cancel.style.backgroundColor = 'red';
-        ok.style.display = 'none';
-        tryAgain.style.backgroundColor = 'red';
+        formCancelButton.style.display = 'inline-block';
+        formCancelButton.style.backgroundColor = 'red';
+        formOkButton.style.display = 'none';
+        formTryAgainButton.style.backgroundColor = 'red';
     }
 }
 
 function closeModal() {
     registerModal.style.display = 'none';
-    overlay.style.display = 'none';
-    registerElement.nameElement.isValid = false;
-    registerElement.emailElement.isValid = false;
-    registerElement.passwordElement.isValid = false;
-    registerElement.confirmPasswordElement.isValid = false;
+    formOverlay.style.display = 'none';
+    for (const validation of Object.values(registerElement)) {
+        validation.isValid = false
+    }
 }
 
 function displaySubmit() {
     if (isValidForm()) {
-        submit.classList.remove('register__submit--disabel');
-        submit.classList.add('register__submit--enable');
+        formSubmit.classList.remove('register__submit--disabel');
+        formSubmit.classList.add('register__submit--enable');
     } else {
-        submit.classList.add('register__submit--disabel');
-        submit.classList.remove('register__submit--enable');
+        formSubmit.classList.add('register__submit--disabel');
+        formSubmit.classList.remove('register__submit--enable');
     }
 }
 
