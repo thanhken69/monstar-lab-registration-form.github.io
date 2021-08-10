@@ -190,7 +190,7 @@ function validateField(element) {
         }
     }
 
-    if (registerElement.confirmPasswordElement.value !== '' && (element = registerElement.passwordElement)) {
+    if (registerElement.confirmPasswordElement.value !== '' && (element.id === registerElement.passwordElement.id)) {
         const matchPassword = registerElement.confirmPasswordElement.rules.customValidate.matchPassword;
         if (!matchPassword.value(registerElement.confirmPasswordElement.value)) {
             appendError(registerElement.confirmPasswordElement, matchPassword.errorMessage);
