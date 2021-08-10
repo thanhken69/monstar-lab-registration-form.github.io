@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/18fde0f373.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="register__section">
+        <div class="container">
+            <form class="register__form">
+                <div id="register-overlay" class="register__overlay"></div>
+                <h2 class="register__name">Register</h2>
+                <div class="register__form-text">
+                    <label class="register__label" for="registerName">Name</label> <br />
+                    <input id="register-name" class="register__input" type="text" placeholder=" Enter name">
+                    <p id="register-name-message" class="register__message">Tên không được có ký tự đặc biệt.
+                    </p>
+                </div>
+                <div class="register__form-text">
+                    <label class="register__label" for="registerEmail">Email Address</label> <br />
+                    <input id="register-email" class="register__input" type="email" placeholder=" Enter email">
+                    <p id="register-email-message" class="register__message">Nhập đúng email của bạn.</p>
+                </div>
+                <div class="register__form-text">
+                    <label class="register__label" for="registerPassword">Password</label> <br />
+                    <input id="register-password" class="register__input" type="password" placeholder=" Enter password">
+                    <p id="register-password-message" class="register__message">
+                        Mật khẩu 8-32 ký tự bao gồm số, chữ thường, chữ hoa, ký tự đặc biệt.
+                    </p>
+                </div>
+                <div class="register__form-text">
+                    <label class="register__label" for="registerConfirmPassword">Confirm Password</label> <br />
+                    <input id="register-confirmpassword" class="register__input" type="password"
+                        placeholder=" Confirm password">
+                    <p id="register-confirmpassword-message" class="register__message">
+                        Xác nhận mật khẩu phải trùng khớp.
+                    </p>
+                </div>
+                <div class="register__submit register__submit--disabel" id="register-submit">
+                    <p id="submit-content" class="submit__content">Submit</p>
+                    <div id="register-loading" class="register__loading spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading</span>
+                    </div>
+                </div>
+
+                <div id="register-modal" class="register__modal">
+                    <div class="modal__header">
+                        <div class="modal__title">Thông báo</div>
+                        <i id="register-close" class="register__close fas fa-times"></i>
+                    </div>
+                    <div id="modal-content" class="modal__content">
+                        Modal content
+                    </div>
+                    <div class="modal__footer">
+                        <div id="modal-ok" class="modal__ok-button">OK</div>
+                        <div id="modal-tryagain" class="modal__again-button">Try Again</div>
+                        <div id="modal-cancel" class="modal__cancel-button">Cancel</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script type="text/javascript" src="./main.js"></script>
+</body>
+
+</html>
