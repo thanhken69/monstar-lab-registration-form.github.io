@@ -40,7 +40,6 @@ let registerElement = {
                         if (name !== '') {
                             return 65 <= firstCharacter && firstCharacter <= 90
                         } else return true
-
                     },
                     errorMessage: "Tên phải có ký tự đầu tiên viết hoa."
                 },
@@ -173,32 +172,25 @@ function elementAddEventListener(element) {
 }
 
 function validateField(element) {
+    removeError(element);
     if (!element.value && element.rules.required.value) {
         appendError(element, element.rules.required.errorMessage);
-        console.log('required')
     } else if (element.rules.pattern && !element.rules.pattern.value(element.value)) {
         appendError(element, element.rules.pattern.errorMessage);
-        console.log('pattern')
     } else if (element.rules.minLength && element.value.length < element.rules.minLength.value) {
         appendError(element, element.rules.minLength.errorMessage);
-        console.log('minLength')
     } else if (element.rules.maxLength && element.value.length > element.rules.maxLength.value) {
         appendError(element, element.rules.maxLength.errorMessage);
-        console.log('maxLength');
     } else if (element.rules.customValidate) {
         for (const validation of Object.values(element.rules.customValidate)) {
             if (!validation.value(element.value)) {
                 appendError(element, validation.errorMessage);
                 break;
             }
-            // else removeError(element)
         }
-        console.log('customValidate')
-    } else {
-        removeError(element);
     }
 
-    if (registerElement.confirmPasswordElement.value !== '') {
+    if (registerElement.confirmPasswordElement.value !== '' && (element = registerElement.passwordElement)) {
         const matchPassword = registerElement.confirmPasswordElement.rules.customValidate.matchPassword;
         if (!matchPassword.value(registerElement.confirmPasswordElement.value)) {
             appendError(registerElement.confirmPasswordElement, matchPassword.errorMessage);
